@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Phishing Awareness Quiz</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <h1>Phishing Awareness Quiz</h1>
+
+    <div class="email-box">
+
+        <h2>Question 1</h2>
+        <p>You receive an email asking for your OTP. What should you do?</p>
+
+        <label>
+            <input type="radio" name="q1" value="wrong">
+            Share the OTP
+        </label><br>
+
+        <label>
+            <input type="radio" name="q1" value="correct">
+            Never share the OTP
+        </label><br>
+
+        <h2>Question 2</h2>
+        <p>What should you do before clicking an unknown link?</p>
+
+        <label>
+            <input type="radio" name="q2" value="correct">
+            Verify the URL
+        </label><br>
+
+        <label>
+            <input type="radio" name="q2" value="wrong">
+            Click immediately
+        </label><br>
+
+        <button onclick="checkAnswers()">Submit Quiz</button>
+
+        <h2 id="result"></h2>
+        <button onclick="window.location.href='index.html'">
+            Back to Home
+        </button>
+    </div>
+
+    <script>
+        function checkAnswers() {
+
+            let score = 0;
+
+            let q1 = document.querySelector('input[name="q1"]:checked');
+            let q2 = document.querySelector('input[name="q2"]:checked');
+            if (!q1 || !q2) {
+                document.getElementById("result").innerHTML =
+                    "Please answer both questions!";
+                return;
+            }
+            if (q1 && q1.value === "correct") {
+                score++;
+            }
+
+            if (q2 && q2.value === "correct") {
+                score++;
+            }
+
+            document.getElementById("result").innerHTML =
+                "Your Score: " + score + " / 2";
+        }
+    </script>
+
+</body>
+</html>

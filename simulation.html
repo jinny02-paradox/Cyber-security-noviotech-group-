@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Demonstration</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="login-box">
+
+        <h1>Account Login Demo</h1>
+
+        <p>This is a simulated login page for cybersecurity awareness.</p>
+
+        <input type="text" placeholder="Demo Username" disabled>
+
+        <input type="password" placeholder="Password entry disabled" disabled>
+
+        <button onclick="window.location.href='awareness.html'">
+            Continue to Awareness Lesson
+        </button>
+
+        <p id="message"></p>
+
+    </div>
+
+    <script>
+        function showAwareness() {
+            document.getElementById("message").innerHTML =
+                "Awareness Alert! Never enter your password on suspicious websites.";
+        }
+    </script>
+
+</body>
+</html>
