@@ -1,197 +1,95 @@
-# Phishing Awareness Simulation Using Social Engineering Techniques
+# PhishShield Backend (Flask + SQLite)
 
-## 1. Project Introduction
+A production-grade Python Flask backend for phishing awareness simulations, interaction telemetry tracking, database management, and quiz assessment scoring.
 
-Phishing is one of the most common cybersecurity threats. Attackers use social engineering techniques such as urgency, fear, and fake account notifications to trick users into sharing sensitive information.
+## Architecture
 
-The **Phishing Awareness Simulation Using Social Engineering Techniques** project is an educational platform designed to demonstrate how phishing attacks work in a safe and controlled environment.
-
-The system simulates a phishing email, provides a harmless demonstration webpage, educates users about phishing prevention, and evaluates their awareness through a quiz. An admin dashboard helps analyze participant interactions and quiz results.
-
-## 2. Problem Statement
-
-Phishing attacks exploit human psychology to obtain sensitive information. Many users cannot identify suspicious emails, fake websites, and malicious links.
-
-This project aims to create a controlled phishing awareness simulation to understand user behaviour, improve cybersecurity awareness, and recommend preventive measures.
-
-## 3. Project Objectives
-
-- Understand common phishing and social engineering techniques.
-- Design realistic but harmless simulated phishing emails.
-- Demonstrate phishing scenarios using a safe webpage.
-- Measure participant awareness through permitted interaction tracking.
-- Conduct an awareness quiz.
-- Analyze quiz performance and simulation statistics.
-- Recommend effective phishing prevention practices.
-
-## 4. Main Features
-
-### Participant Module
-- Home page
-- Simulated phishing email
-- Harmless login demonstration page
-- Phishing awareness lessons
-- Interactive awareness quiz
-- Quiz score and feedback
-
-### Backend Module
-- Flask-based backend
-- API integration
-- Database management
-- Simulation session management
-- Interaction event storage
-- Quiz result storage
-
-### Simulation Tracking Module
-- Email viewed tracking
-- Demonstration link click tracking
-- Quiz completion tracking
-- Consent-based event collection
-
-### Admin Dashboard
-- Total participant sessions
-- Email interaction statistics
-- Demonstration link click statistics
-- Quiz attempts
-- Average quiz scores
-- Awareness analysis and recommendations
-
-## 5. Technology Stack
-
-| Component | Technology |
-|---|---|
-| Frontend | HTML, CSS, JavaScript |
-| Backend | Python, Flask |
-| Database | As configured in the backend |
-| API Communication | HTTP / REST API |
-| Development Environment | Visual Studio Code |
-| Version Control | Git and GitHub |
-
-## 6. Project Workflow
-
-1. Participant opens the project website.
-2. Participant starts the awareness simulation.
-3. A simulated phishing email is displayed.
-4. Participant clicks the demonstration link.
-5. A harmless login demonstration page is displayed.
-6. The backend records permitted interaction events.
-7. Participant views phishing awareness lessons.
-8. Participant completes the awareness quiz.
-9. Quiz results are validated and stored.
-10. Admin views aggregate statistics and awareness results.
-
-## 7. Team Responsibilities
-
-| Team Member | Responsibility |
-|---|---|
-| Member 1 | Frontend development using HTML, CSS and JavaScript |
-| Member 2 | Backend development using Python and Flask |
-| Member 3 | Simulation tracking and quiz result integration |
-| Member 4 | Admin dashboard, analytics and result presentation |
-
-## 8. Frontend Project Structure
-
-```text
-Phishing-Awareness-Simulation/
-│
-├── frontend/
-│   ├── index.html
-│   ├── email.html
-│   ├── simulation.html
-│   ├── awareness.html
-│   ├── quiz.html
-│   │
-│   └── css/
-│       └── style.css
-│
-├── backend/
-│   └── Backend files
-│
-├── README.md
-└── requirements.txt
-```
-
-Note: The backend folder structure should be updated according to the actual Flask implementation.
-
-## 9. Installation and Execution
-
-### Prerequisites
-- Python installed
-- Visual Studio Code
-- Git
-- Modern web browser
-
-### Frontend Execution
-
-1. Clone or download the project repository.
-2. Open the project folder in Visual Studio Code.
-3. Open the `frontend` folder.
-4. Run `index.html` using the Live Server extension.
-5. Navigate through the simulation pages.
-
-### Backend Execution
-
-Follow the setup instructions provided by the backend developer.
-
-A typical Flask setup may use:
-
-```bash
-python -m venv venv
-```
-
-Activate the environment on Windows:
-
-```bash
-venv\Scripts\activate
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Start the Flask application using the actual entry-point filename and instructions provided by the backend developer.
-
-## 10. Privacy and Ethical Considerations
-
-This project is developed strictly for educational and cybersecurity awareness purposes.
-
-- Obtain participant consent before conducting simulations and tracking interactions.
-- Do not collect real passwords, OTPs or sensitive credentials.
-- Use harmless demonstration pages.
-- Collect only the minimum information required.
-- Protect participant data.
-- Restrict admin dashboard access to authorized users.
-- Use the simulation only in an approved and controlled environment.
-
-## 11. Expected Results
-
-The project is expected to:
-
-- Demonstrate how social engineering techniques influence users.
-- Help users recognize suspicious emails and links.
-- Measure phishing awareness through quiz performance.
-- Present simulation statistics through an admin dashboard.
-- Improve cybersecurity awareness through preventive recommendations.
-
-## 12. Future Scope
-
-- More phishing email scenarios.
-- Advanced awareness quizzes.
-- Additional phishing detection techniques.
-- Detailed analytics and reporting.
-- Multi-language awareness lessons.
-- Automated cybersecurity awareness training.
-
-## 13. Conclusion
-
-The Phishing Awareness Simulation project provides a practical approach to understanding phishing attacks and social engineering techniques. By combining simulated emails, a harmless demonstration webpage, awareness lessons, quizzes, and an admin dashboard, the system helps users understand phishing risks and adopt safer online practices.
+- **Web Framework**: Flask 3.0 with Flask-CORS
+- **Database Engine**: SQLite 3 with WAL mode, foreign keys, and indexes (`phishing_simulation.db`)
+- **Key Modules**:
+  - `app.py`: REST API routing, request validation, CORS, error handling
+  - `database.py`: SQLite connection lifecycle, transaction queries, and schema migration
+  - `models.py`: Data models, response evaluation, and cybersecurity risk scoring
+  - `schema.sql`: Full DDL for `sessions`, `interaction_events`, and `quiz_results`
+  - `seed.py`: Benchmark data generator for cohort analytics
 
 ---
 
-**Project Title:** Phishing Awareness Simulation Using Social Engineering Techniques
+## Quickstart (Local Python Execution)
 
-**Project Type:** Major Project – Cyber Security
+1. **Create and activate a virtual environment**:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-**Development Approach:** Team-Based Development
+2. **Install dependencies**:
+   ```bash
+   pip install -r backend/requirements.txt
+   ```
+
+3. **Initialize and seed the database**:
+   ```bash
+   python backend/seed.py
+   ```
+
+4. **Start the Flask server**:
+   ```bash
+   python backend/app.py
+   # Or using flask CLI:
+   export FLASK_APP=backend/app.py
+   flask run --port=5000
+   ```
+
+Server will be running at `http://localhost:5000`.
+
+---
+
+## API Endpoints Reference
+
+### 1. Simulation Session Management
+- `POST /api/sessions/start`
+  - Body: `{"participant_id": "alice@company.com", "department": "Finance"}`
+  - Returns: `{"session_uuid": "...", "status": "in_progress", "current_step": "intro"}`
+- `GET /api/sessions/<session_uuid>`
+  - Returns full session data, logged event stream, and quiz results.
+- `PATCH /api/sessions/<session_uuid>/step`
+  - Body: `{"step": "email_simulation"}`
+- `GET /api/sessions`
+  - Query params: `?limit=50&status=completed`
+
+### 2. Interaction Telemetry & Event Storage
+- `POST /api/events`
+  - Body:
+    ```json
+    {
+      "session_uuid": "...",
+      "event_type": "SUSPICIOUS_LINK_CLICKED",
+      "stage": "email_simulation",
+      "target_element": "password_reset_button",
+      "dwell_time_ms": 3200,
+      "metadata": {"href": "http://evil-domain.com"}
+    }
+    ```
+- `GET /api/events`
+  - Query params: `?session_uuid=...&event_type=...&limit=100`
+
+### 3. Quiz Result Storage & Assessment
+- `POST /api/quiz/submit`
+  - Body:
+    ```json
+    {
+      "session_uuid": "...",
+      "q1_answer": "Never share the OTP",
+      "q2_answer": "Verify the URL",
+      "time_taken_seconds": 45
+    }
+    ```
+  - Evaluates score, marks session as `completed`, computes risk rating (`low`, `medium`, `high`, `critical`), and stores feedback.
+- `GET /api/quiz/results/<session_uuid>`
+
+### 4. Cohort Analytics & Database Inspection
+- `GET /api/analytics/summary`: Aggregate compromise rate, quiz pass percentage, vulnerability breakdown.
+- `GET /api/db/tables`: Inspect SQLite tables, column types, row counts, and sample records.
+- `GET /api/db/export`: Export all tables as JSON.
+- `POST /api/db/seed`: Seed benchmark cohort data.

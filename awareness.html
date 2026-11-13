@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,10 +26,54 @@
         <button onclick="window.location.href='index.html'">
             Back to Home
         </button>
+
         <button onclick="window.location.href='quiz.html'">
             Take Awareness Quiz
         </button>
+
     </div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:5000";
+
+        async function trackAwarenessView() {
+
+            const sessionId = localStorage.getItem("session_id");
+
+            if (!sessionId) {
+                console.warn("Session ID not found.");
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL + "/api/events", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        session_uuid: sessionId,
+                        event_type: "AWARENESS_LESSON_VIEWED",
+                        stage: "awareness",
+                        target_element: "awareness_page"
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || "Event tracking failed");
+                }
+
+                console.log("Awareness lesson event saved:", data);
+
+            } catch (error) {
+                console.error("Awareness tracking error:", error);
+            }
+        }
+
+        trackAwarenessView();
+    </script>
 
 </body>
 </html>

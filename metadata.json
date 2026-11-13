@@ -1,0 +1,6 @@
+{
+  "name": "PhishShield: Simulation & Awareness Platform",
+  "description": "Full-stack cybersecurity simulation engine with Flask backend architecture, REST API integration, SQLite database management, participant session tracking, interaction telemetry, and quiz assessment.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -25,10 +25,73 @@
 
         <p>Thank you,<br>Security Team</p>
 
-        <button onclick="window.location.href='simulation.html'">
+        <button onclick="openSimulation()">
             View Email Link
         </button>
     </div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:5000";
+
+        async function startSession() {
+
+            const existingSession = localStorage.getItem("session_id");
+            const completed = localStorage.getItem("session_completed");
+
+            // Reuse existing session if it is not completed
+            if (existingSession && completed !== "true") {
+                console.log("Existing session reused:", existingSession);
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    API_URL + "/api/sessions/start",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({})
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Session creation failed");
+                }
+
+                const sessionId = data.session.session_uuid;
+
+                if (!sessionId) {
+                    throw new Error("Session ID not found");
+                }
+
+                localStorage.setItem("session_id", sessionId);
+                localStorage.setItem("session_completed", "false");
+
+                console.log("New session created:", sessionId);
+
+            } catch (error) {
+                console.error("Session error:", error);
+                alert("Could not start simulation. Please try again.");
+            }
+        }
+        function openSimulation() {
+    const sessionId = localStorage.getItem("session_id");
+
+    if (!sessionId) {
+        alert("Session is not ready. Please refresh the page.");
+        return;
+    }
+
+    window.location.assign("./simulation.html");
+}
+        
+
+        startSession();
+    </script>
 
 </body>
 </html>

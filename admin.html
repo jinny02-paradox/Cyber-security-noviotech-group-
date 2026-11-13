@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard - PhishShield</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <h1>PhishShield Admin Dashboard</h1>
+    <p>Phishing Awareness Simulation Analytics</p>
+
+    <!-- Admin Login -->
+    <div id="loginSection">
+        <h2>Admin Login</h2>
+
+        <input type="text" id="username"
+               placeholder="Admin Username">
+
+        <br><br>
+
+        <input type="password" id="password"
+               placeholder="Admin Password">
+
+        <br><br>
+
+        <button onclick="adminLogin()">Login</button>
+    </div>
+
+    <p id="message"></p>
+
+    <!-- Dashboard -->
+    <div id="dashboard" style="display:none;">
+
+        <button onclick="loadAnalytics()">Refresh Dashboard</button>
+        <button onclick="logout()">Logout</button>
+
+        <h2>Project Statistics</h2>
+
+        <h3>Total Sessions</h3>
+        <p id="totalSessions">Loading...</p>
+
+        <h3>Completed Sessions</h3>
+        <p id="completedSessions">Loading...</p>
+
+        <h3>Average Quiz Score</h3>
+        <p id="averageScore">Loading...</p>
+
+        <h3>Quiz Pass Rate</h3>
+        <p id="passRate">Loading...</p>
+
+        <h3>Compromised Sessions</h3>
+        <p id="compromisedSessions">Loading...</p>
+
+        <h3>Compromise Rate</h3>
+        <p id="compromiseRate">Loading...</p>
+
+        <h3>Quiz Attempts</h3>
+        <p id="quizAttempts">Loading...</p>
+
+        <h2>Event Frequency</h2>
+        <ul id="eventList"></ul>
+
+    </div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:5000";
+
+        async function adminLogin() {
+            const username =
+                document.getElementById("username").value.trim();
+
+            const password =
+                document.getElementById("password").value;
+
+            const message =
+                document.getElementById("message");
+
+            try {
+                message.textContent = "Checking login...";
+
+                const response = await fetch(
+                    API_URL + "/api/admin/login",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            password: password
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || "Login failed");
+                }
+
+                sessionStorage.setItem("admin_token", data.token);
+
+                document.getElementById("password").value = "";
+                document.getElementById("loginSection").style.display = "none";
+                document.getElementById("dashboard").style.display = "block";
+
+                message.textContent = "Admin login successful!";
+
+                loadAnalytics();
+
+            } catch (error) {
+                message.textContent = error.message;
+            }
+        }
+
+        async function loadAnalytics() {
+            const token = sessionStorage.getItem("admin_token");
+            const message = document.getElementById("message");
+
+            try {
+                message.textContent = "Loading analytics...";
+
+                const response = await fetch(
+                    API_URL + "/api/analytics/summary",
+                    {
+                        headers: {
+                            "Authorization": "Bearer " + token
+                        }
+                    }
+                );
+
+                const data = await response.json();
+
+                if (response.status === 401) {
+                    logout();
+                    throw new Error("Session expired. Please login again.");
+                }
+
+                if (!response.ok || !data.success) {
+                    throw new Error("Could not load analytics");
+                }
+
+                const m = data.metrics;
+
+                document.getElementById("totalSessions").textContent = m.total_sessions;
+                document.getElementById("completedSessions").textContent = m.completed_sessions;
+                document.getElementById("averageScore").textContent = m.average_quiz_score_percent + "%";
+                document.getElementById("passRate").textContent = m.quiz_pass_rate_percent + "%";
+                document.getElementById("compromisedSessions").textContent = m.compromised_sessions;
+                document.getElementById("compromiseRate").textContent = m.compromise_rate_percent + "%";
+                document.getElementById("quizAttempts").textContent = m.quiz_attempts;
+
+                const eventList = document.getElementById("eventList");
+                eventList.innerHTML = "";
+
+                m.event_frequency.forEach(event => {
+                    const item = document.createElement("li");
+                    item.textContent = event.event_type + ": " + event.count;
+                    eventList.appendChild(item);
+                });
+
+                message.textContent = "Analytics loaded successfully!";
+
+            } catch (error) {
+                message.textContent = error.message;
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem("admin_token");
+
+            document.getElementById("dashboard").style.display = "none";
+            document.getElementById("loginSection").style.display = "block";
+
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
+
+            document.getElementById("message").textContent =
+                "You have been logged out.";
+        }
+    </script>
+
+</body>
+</html>

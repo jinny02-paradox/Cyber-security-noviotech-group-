@@ -17,7 +17,7 @@
 
         <input type="password" placeholder="Password entry disabled" disabled>
 
-        <button onclick="window.location.href='awareness.html'">
+        <button onclick="showAwareness()">
             Continue to Awareness Lesson
         </button>
 
@@ -26,9 +26,47 @@
     </div>
 
     <script>
-        function showAwareness() {
-            document.getElementById("message").innerHTML =
-                "Awareness Alert! Never enter your password on suspicious websites.";
+        const API_URL = "http://127.0.0.1:5000";
+
+        async function showAwareness() {
+            const sessionId = localStorage.getItem("session_id");
+
+            if (!sessionId) {
+                alert("Session not found. Please restart the simulation.");
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL + "/api/events", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        session_uuid: sessionId,
+                        event_type: "DEMO_CONTINUE_CLICKED",
+                        stage: "simulation",
+                        target_element: "continue_to_awareness",
+                        metadata: {
+                            action: "Participant continued to awareness lesson"
+                        }
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || "Event could not be saved");
+                }
+
+                console.log("Event saved successfully:", data);
+
+                window.location.href = "awareness.html";
+
+            } catch (error) {
+                console.error("Event tracking error:", error);
+                alert("Could not save your progress. Please try again.");
+            }
         }
     </script>
 

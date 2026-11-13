@@ -1,8 +1,18 @@
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Phishing Awareness Quiz</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+    #resultBox {
+        display: none;
+        margin-top: 20px;
+        padding: 15px;
+        background: #170bca;
+        border-radius: 8px;
+    }
+</style>
 </head>
 <body>
 
@@ -36,37 +46,107 @@
             Click immediately
         </label><br>
 
-        <button onclick="checkAnswers()">Submit Quiz</button>
+        <button id="submitButton" onclick="checkAnswers()">
+            Submit Quiz
+        </button>
 
-        <h2 id="result"></h2>
+        <div id="resultBox" style="display: none;">
+    <h2 id="result"></h2>
+    <p id="feedback"></p>
+</div>
+
         <button onclick="window.location.href='index.html'">
             Back to Home
         </button>
+
     </div>
 
     <script>
-        function checkAnswers() {
 
-            let score = 0;
+        const API_URL = "http://127.0.0.1:5000";
+        const startTime = Date.now();
 
-            let q1 = document.querySelector('input[name="q1"]:checked');
-            let q2 = document.querySelector('input[name="q2"]:checked');
+        async function checkAnswers() {
+
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+
             if (!q1 || !q2) {
-                document.getElementById("result").innerHTML =
-                    "Please answer both questions!";
+    document.getElementById("resultBox").style.display = "block";
+    document.getElementById("result").textContent =
+        "Please answer both questions!";
+    document.getElementById("feedback").textContent = "";
+    return;
+}
+
+            const sessionId = localStorage.getItem("session_id");
+
+            if (!sessionId) {
+                alert("Session not found. Please restart the simulation.");
                 return;
             }
-            if (q1 && q1.value === "correct") {
-                score++;
-            }
 
-            if (q2 && q2.value === "correct") {
-                score++;
-            }
+            const timeTaken = Math.floor(
+                (Date.now() - startTime) / 1000
+            );
 
-            document.getElementById("result").innerHTML =
-                "Your Score: " + score + " / 2";
+            const submitButton = document.getElementById("submitButton");
+            submitButton.disabled = true;
+
+            try {
+
+                const response = await fetch(API_URL + "/api/quiz/submit", {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        session_uuid: sessionId,
+                        q1_answer: q1.value === "correct"
+                            ? "never share the otp"
+                            : "share the otp",
+
+                        q2_answer: q2.value === "correct"
+                            ? "verify the url"
+                            : "click immediately",
+
+                        time_taken_seconds: timeTaken
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || "Quiz submission failed");
+                }
+                localStorage.setItem("session_completed", "true");
+
+document.getElementById("resultBox").style.display = "block";
+
+document.getElementById("result").textContent =
+    "Your Score: " + data.score + " / " +
+    data.total_questions;
+
+document.getElementById("feedback").textContent =
+    data.feedback;
+
+                console.log("Quiz submitted successfully:", data);
+
+            } catch (error) {
+
+                console.error("Quiz submission error:", error);
+
+                document.getElementById("resultBox").style.display = "block";
+
+document.getElementById("result").textContent =
+    "Unable to submit quiz. Please try again.";
+
+                submitButton.disabled = false;
+            }
         }
+
     </script>
 
 </body>
